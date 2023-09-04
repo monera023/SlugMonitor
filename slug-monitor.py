@@ -1,7 +1,6 @@
 import json
 import time
 import random
-from datetime import datetime
 import requests
 from datetime import datetime
 
@@ -12,8 +11,9 @@ headers= {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/5
 
 shoeSlugs = []
 newShoeSlugs = []
-shoeSlugFilePath = "/opt/slug-monitor/shoeSlugs.txt"
-diffFilePath = "/opt/slug-monitor/diffSlugs.txt"
+shoeSlugFilePath = "/Users/sjituri/Documents/slug-monitor/shoeSlugs.txt"
+diffFilePath = "/Users/sjituri/Documents/slug-monitor/diffSlugs.txt"
+baseUrl = "https://www.nike.com/in/launch/t/"
 
 urls =  [
     "https://api.nike.com/product_feed/threads/v3/?anchor=0&count=50&filter=marketplace%28IN%29&filter=language%28en-GB%29&filter=inStock%28true%29&filter=productInfo.merchPrice.discounted%28false%29&filter=channelId%28010794e5-35fe-4e32-aaff-cd2c74f89d61%29&filter=exclusiveAccess%28true%2Cfalse%29",
@@ -22,6 +22,9 @@ urls =  [
     "https://api.nike.com/product_feed/threads/v3/?anchor=150&count=50&filter=marketplace%28IN%29&filter=language%28en-GB%29&filter=inStock%28true%29&filter=productInfo.merchPrice.discounted%28false%29&filter=channelId%28010794e5-35fe-4e32-aaff-cd2c74f89d61%29&filter=exclusiveAccess%28true%2Cfalse%29"
   ]
 
+from discordwebhook import Discord
+
+discord = Discord(url="")
 
 def getSlugs(url):
     print("In getSlugs..")
@@ -63,8 +66,21 @@ def writeDiff(diffSet):
             file.write(diff + "\n")
 
 
+def sendDiffToDiscord(diffSet):
+    postToDiscordContent("Found diff on..." + str(formatted_datetime))
+    for diff in diffSet:
+        postToDiscordEmbed(diff)
+        
+
+def postToDiscordContent(message):
+    discord.post(content=message)
+
+def postToDiscordEmbed(message):
+    discord.post(embeds=[{"title": message, "description": baseUrl + message}])
+
 
 print("Starting at.." + str(formatted_datetime))
+
 if __name__ == "__main__":
     readSlugsFromFile()
     print("Read slugs for file.." + str(len(shoeSlugs)))
@@ -80,6 +96,7 @@ if __name__ == "__main__":
     if(diffLen > 0):
         print("Found diff.." + str(diffLen))
         writeDiff(diffSlugs)
+        sendDiffToDiscord(diffSlugs)
     else:
         print("No diff")
-    writeSlugsToFile(newShoeSlugs)    
+    writeSlugsToFile(newShoeSlugs)
