@@ -3,7 +3,10 @@ import time
 import random
 import requests
 from datetime import datetime
+import os
 
+
+script_dir = os.path.dirname(os.path.realpath(__file__))
 current_datetime = datetime.now()
 formatted_datetime = current_datetime.strftime("%d-%m-%Y %H:%M")
 
@@ -11,8 +14,8 @@ headers= {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/5
 
 shoeSlugs = []
 newShoeSlugs = []
-shoeSlugFilePath = "/Users/sjituri/Documents/slug-monitor/shoeSlugs.txt"
-diffFilePath = "/Users/sjituri/Documents/slug-monitor/diffSlugs.txt"
+shoeSlugFilePath = os.path.join(script_dir, "shoeSlugs.txt")
+diffFilePath = os.path.join(script_dir, "diffSlugs.txt")
 baseUrl = "https://www.nike.com/in/launch/t/"
 
 urls =  [
@@ -36,7 +39,7 @@ def getSlugs(url):
 
 def readSlugsFromFile():
     print("Reading for file..")
-    with open(shoeSlugFilePath, "r") as file:
+    with open(shoeSlugFilePath, "r", encoding="utf-8") as file:
         for line in file.readlines():
             shoeSlugs.append(line.strip())
 

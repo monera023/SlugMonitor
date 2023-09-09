@@ -1,0 +1,7 @@
+# Ignore diffSlugs.txt and shoeSlugs.txt
+diffSlugs.txt
+shoeSlugs.txt
+
+# Other Git ignore rules go here (if needed)
+venv/
+.idea/
