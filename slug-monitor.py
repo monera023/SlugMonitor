@@ -1,9 +1,10 @@
 import json
-import time
-import random
 import requests
 from datetime import datetime
+import os
 
+
+script_dir = os.path.dirname(os.path.realpath(__file__))
 current_datetime = datetime.now()
 formatted_datetime = current_datetime.strftime("%d-%m-%Y %H:%M")
 
@@ -11,8 +12,8 @@ headers= {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/5
 
 shoeSlugs = []
 newShoeSlugs = []
-shoeSlugFilePath = "/Users/sjituri/Documents/slug-monitor/shoeSlugs.txt"
-diffFilePath = "/Users/sjituri/Documents/slug-monitor/diffSlugs.txt"
+shoeSlugFilePath = os.path.join(script_dir, "shoeSlugs.txt")
+diffFilePath = os.path.join(script_dir, "diffSlugs.txt")
 baseUrl = "https://www.nike.com/in/launch/t/"
 
 urls =  [
@@ -21,10 +22,13 @@ urls =  [
     "https://api.nike.com/product_feed/threads/v3/?anchor=100&count=50&filter=marketplace%28IN%29&filter=language%28en-GB%29&filter=inStock%28true%29&filter=productInfo.merchPrice.discounted%28false%29&filter=channelId%28010794e5-35fe-4e32-aaff-cd2c74f89d61%29&filter=exclusiveAccess%28true%2Cfalse%29",
     "https://api.nike.com/product_feed/threads/v3/?anchor=150&count=50&filter=marketplace%28IN%29&filter=language%28en-GB%29&filter=inStock%28true%29&filter=productInfo.merchPrice.discounted%28false%29&filter=channelId%28010794e5-35fe-4e32-aaff-cd2c74f89d61%29&filter=exclusiveAccess%28true%2Cfalse%29"
   ]
+discord_url = os.getenv("DISCORD_URL")
 
 from discordwebhook import Discord
 
-discord = Discord(url="")
+if discord_url is None:
+    raise ValueError("DISCORD_URL environment variable is not set")
+discord = Discord(url=discord_url)
 
 def getSlugs(url):
     print("In getSlugs..")
@@ -36,7 +40,7 @@ def getSlugs(url):
 
 def readSlugsFromFile():
     print("Reading for file..")
-    with open(shoeSlugFilePath, "r") as file:
+    with open(shoeSlugFilePath, "r", encoding="utf-8") as file:
         for line in file.readlines():
             shoeSlugs.append(line.strip())
 
